@@ -47,14 +47,9 @@ class TodoController extends Controller
     public function show(int $id)
     {
 
-        // 元
         $todo = $this->todo->findOrFail($id);
 
         return $todo;
-
-        // 追加
-        // $todo = Todo::findOrFail($id);
-        // return response()->json($todo, 200);
     }
 
     /**
@@ -80,7 +75,6 @@ class TodoController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        // 元
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string', 'max:255']
@@ -90,17 +84,6 @@ class TodoController extends Controller
         $todo->update($validated);
 
         return $todo;
-
-        // 追加
-        // $validated = $request->validate([
-        //     'title' => 'required|string|max:255',
-        //     'content' => 'required|string|max:255',
-        // ]);
-    
-        // $todo = Todo::findOrFail($id);
-        // $todo->update($validated);
-    
-        // return response()->json($todo, 200);
     }
 
 
@@ -112,15 +95,7 @@ class TodoController extends Controller
      */
     public function destroy(int $id)
     {
-        // 元
         $this->todo->findOrFail($id)->delete();
         return ['message' => 'ok'];
-
-
-        // 追加
-        // $todo = Todo::findOrFail($id);
-        // $todo->delete();
-
-        // return response()->json(null, 204);
     }
 }
