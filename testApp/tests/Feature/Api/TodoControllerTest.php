@@ -137,20 +137,20 @@ class TodoControllerTest extends TestCase
     public function 存在する削除処理(): void
     {
         $todo = Todo::create([
-            'title' => '削除するタイトル',
-            'content' => '削除する内容',
+            'title' => '存在するタイトル',
+            'content' => '存在する内容',
         ]);
 
-        $response = $this->delete('/todo/delete/' . $todo->id);
+        $response = $this->deleteJson(route('api.todo.delete', ['id' => $todo->id]));
 
         $response->assertStatus(200);
 
         $this->assertDatabaseMissing('todos', [
             'id' => $todo->id,
-            'title' => '削除するタイトル',
-            'content' => '削除する内容',
+            'title' => $todo->title,
+            'content' => $todo->content,
         ]);
-    }   
+    }
     
     /**
      * @test
