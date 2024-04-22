@@ -87,17 +87,46 @@ class TodoControllerTest extends TestCase
     public function 更新処理の未入力(): void
     {
 
+        $todo = Todo::create([
+            'title' => '初期タイトル',
+            'content' => '初期内容',
+        ]);
+
         $updateData = [
             'title' => '',
             'content' => '',
         ];
 
-        $response = $this->putJson('/todo/1', $updateData);
+        $response = $this->putJson(route('api.todo.update', ['id' => $todo->id]), $updateData);
 
         $response->assertStatus(422);
+
+        $this->assertDatabaseHas('todos', [
+            'id' => $todo->id,
+            'title' => '初期タイトル',
+            'content' => '初期内容',
+        ]);
     }
 
     
+    /**
+     * @test
+     */
+    public function 存在しないレコードの更新処理(): void
+    {
+        $nonExistentId = 9999;
+
+        $updateData = [
+            'title' => '更新タイトル',
+            'content' => '更新内容',
+        ];
+
+        $response = $this->putJson(route('api.todo.update', ['id' => $nonExistentId]), $updateData);
+
+        $response->assertStatus(404);
+    }
+
+
     /**
      * @test
      */
