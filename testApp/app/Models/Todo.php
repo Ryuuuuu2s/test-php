@@ -22,14 +22,7 @@ class Todo extends Model
      */
     protected $dates = ['created_at', 'updated_at'];
     
-
     use HasFactory;
-
-    protected static function newFactory(){
-
-        return \Database\Factories\TodoFactory::new();
-
-    }
 
     public function show(Todo $todo)
     {
