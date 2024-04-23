@@ -48,7 +48,7 @@ class TodoControllerTest extends TestCase
             'content' => '',
         ];
 
-        $response = $this->postJson('/todo', $incompleteData);
+        $response = $this->postJson(route('todo.store'), $incompleteData);
 
         $response->assertStatus(422);
     }
@@ -60,37 +60,41 @@ class TodoControllerTest extends TestCase
     public function 更新処理(): void
     {
 
-        $todo = Todo::create([
+        $initialData = [
             'title' => '初期タイトル',
             'content' => '初期内容',
-        ]);
+        ];
+
+        $todo = Todo::factory()->create($initialData);
 
         $updateData = [
             'title' => '更新後のタイトル',
             'content' => '更新後の内容',
         ];
 
-        $response = $this->putJson('/todo/' . $todo->id, $updateData);
+        $response = $this->putJson(route('api.todo.update', ['id' => $todo->id]), $updateData);
 
-        $response->assertStatus(302);
+        $response->assertStatus(200);
 
         $this->assertDatabaseHas('todos', [
             'id' => $todo->id,
-            'title' => '更新後のタイトル',
-            'content' => '更新後の内容',
+            'title' => $updateData['title'],
+            'content' => $updateData['content'],
         ]);
     }
+
 
     /**
      * @test
      */
     public function 更新処理の未入力(): void
     {
-
-        $todo = Todo::create([
+        $initialData = [
             'title' => '初期タイトル',
             'content' => '初期内容',
-        ]);
+        ];
+
+        $todo = Todo::factory()->create($initialData);
 
         $updateData = [
             'title' => '',
@@ -101,20 +105,17 @@ class TodoControllerTest extends TestCase
 
         $response->assertStatus(422);
 
-        $this->assertDatabaseHas('todos', [
-            'id' => $todo->id,
-            'title' => '初期タイトル',
-            'content' => '初期内容',
-        ]);
+        $this->assertDatabaseHas('todos', $initialData);
     }
 
-    
+
     /**
      * @test
      */
     public function 存在しないレコードの更新処理(): void
     {
-        $nonExistentId = 9999;
+
+        $nonExistentId = Todo::max('id') + 1;
 
         $updateData = [
             'title' => '更新タイトル',
@@ -126,26 +127,27 @@ class TodoControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-
     /**
      * @test
      */
     public function 存在する詳細取得(): void
     {
 
-        $todo = Todo::create([
+        $todoData = [
             'title' => '存在するタイトル',
             'content' => '存在する内容',
-        ]);
+        ];
 
-        $response = $this->get('/api/todo/' . $todo->id);
+        $todo = Todo::factory()->create($todoData);
+
+        $response = $this->get(route('api.todo.show', ['id' => $todo->id]));
 
         $response->assertStatus(200);
 
         $response->assertJson([
             'id' => $todo->id,
-            'title' => '存在するタイトル',
-            'content' => '存在する内容',
+            'title' => $todoData['title'],
+            'content' => $todoData['content'],
         ]);
     }
         
@@ -165,10 +167,12 @@ class TodoControllerTest extends TestCase
      */
     public function 存在する削除処理(): void
     {
-        $todo = Todo::create([
+        $todoData = [
             'title' => '存在するタイトル',
             'content' => '存在する内容',
-        ]);
+        ];
+
+        $todo = Todo::factory()->create($todoData);
 
         $response = $this->deleteJson(route('api.todo.delete', ['id' => $todo->id]));
 
@@ -176,8 +180,8 @@ class TodoControllerTest extends TestCase
 
         $this->assertDatabaseMissing('todos', [
             'id' => $todo->id,
-            'title' => $todo->title,
-            'content' => $todo->content,
+            'title' => $todoData['title'],
+            'content' => $todoData['content'],
         ]);
     }
     
