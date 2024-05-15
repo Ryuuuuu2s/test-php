@@ -7,57 +7,32 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyBilling;
 use App\Models\Company;
+use App\Http\Requests\CompanyBillingStoreRequest;
+use App\Http\Requests\CompanyBillingUpdateRequest;
+
 
 class CompanyBillingController extends Controller
 {
     // 請求先情報の登録
-    public function store(Request $request)
+    public function store(CompanyBillingStoreRequest $request, $company_id)
     {
-        $validatedData = $request->validate([
-            'company_id' => 'required|exists:companies,id', 
-            'name' => 'required|string',
-            'name_kana' => 'required|string',
-            'address' => 'required|string',
-            'tel' => 'required|string',
-            'department' => 'required|string',
-            'billing_name' => 'required|string',
-            'billing_name_kana' => 'required|string'
-        ]);
-
-        $billing = CompanyBilling::create($validatedData);
+        $company = Company::findOrFail($company_id);
+        $billing = $company->billings()->create($request->validated());
         return response()->json($billing, 201);
     }
 
-    // 請求先情報の取得
+   // 請求先情報の取得
     public function show($id)
     {
-        $billing = CompanyBilling::find($id);
-        if (!$billing) {
-            return response()->json(['message' => 'Billing information not found.'], 404);
-        }
+        $billing = CompanyBilling::findOrFail($id);
         return response()->json($billing, 200);
     }
-
     
     // 請求先情報の更新
-    public function update(Request $request, $id)
+    public function update(CompanyBillingUpdateRequest $request, $id)
     {
-        $billing = CompanyBilling::find($id);
-        if (!$billing) {
-            return response()->json(['message' => 'Billing information not found.'], 404);
-        }
-
-        $validatedData = $request->validate([
-            'name' => 'required|string',
-            'name_kana' => 'required|string',
-            'address' => 'required|string',
-            'tel' => 'required|string',
-            'department' => 'nullable|string',
-            'billing_name' => 'nullable|string',
-            'billing_name_kana' => 'nullable|string'
-        ]);
-
-        $billing->update($validatedData);
+        $billing = CompanyBilling::findOrFail($id);
+        $billing->update($request->validated());
         return response()->json($billing, 200);
     }
 

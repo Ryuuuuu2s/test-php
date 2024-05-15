@@ -6,6 +6,8 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Http\Requests\CompanyStoreRequest;
+use App\Http\Requests\CompanyUpdateRequest;
 
 class CompanyController extends Controller
 {
@@ -16,19 +18,9 @@ class CompanyController extends Controller
     /**
      * 会社情報の登録を行う
      */
-    public function store(Request $request)
+    public function store(CompanyStoreRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string'],
-            'name_kana' => ['required', 'string'],
-            'address' => ['required', 'string'],
-            'tel' => ['required', 'string'],
-            'representative_name' => ['required', 'string'],
-            'representative_name_kana' => ['required', 'string'],
-        ]);
-
-        $this->company->fill($validated)->save();
-
+        $this->company->fill($request->validated())->save();
         return ['message' => 'ok'];
     }
 
@@ -44,21 +36,11 @@ class CompanyController extends Controller
     /**
      * 会社情報の更新を行う
      */
-    public function update(Request $request, $id)
+     public function update(CompanyUpdateRequest $request, $id)
     {
-        $validated = $request->validate([
-            'name' => ['sometimes', 'string'],
-            'name_kana' => ['sometimes', 'string'],
-            'address' => ['sometimes', 'string'],
-            'tel' => ['sometimes', 'string'],
-            'representative_name' => ['sometimes', 'string'],
-            'representative_name_kana' => ['sometimes', 'string'],
-        ]);
-
         $company = Company::findOrFail($id);
-        $company->fill($validated)->save();
-
-        return response()->json(['message' => 'Updated successfully']);
+        $company->fill($request->validated())->save();
+        return response()->json(['message' => 'ok']);
     }
 
     /**

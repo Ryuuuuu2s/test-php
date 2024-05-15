@@ -26,6 +26,7 @@ Route::put('company/{id}', [CompanyController::class, 'update'])->name('api.comp
 Route::delete('company/{id}', [CompanyController::class, 'destroy'])->name('api.company.destroy');
 
 Route::apiResource('company-billings', CompanyBillingController::class);
+Route::post('/companies/{company}/billings', [CompanyBillingController::class, 'store']);
 Route::get('/company-billings/{id}', [CompanyBillingController::class, 'show']);
 Route::delete('company-billings/{company_billing}', [CompanyBillingController::class, 'destroy'])->name('company-billings.destroy');
 
